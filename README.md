@@ -40,7 +40,25 @@ Postgres Redis Docker BullMQ WebSocket
 - Redis
 - Docker daemon
 
-## Setup
+## Quick Start (Docker Compose)
+
+```bash
+# Option 1: Use defaults
+cp .env.example .env
+
+# Option 2: Generate random credentials
+./scripts/setup.sh
+```
+
+Then start the services:
+
+```bash
+docker compose up -d
+```
+
+This starts PostgreSQL, Redis, and the application. Access at `http://localhost:3000`.
+
+## Manual Setup
 
 1. Install dependencies:
 
@@ -48,21 +66,21 @@ Postgres Redis Docker BullMQ WebSocket
 bun install
 ```
 
-2. Configure environment variables:
+2. Start PostgreSQL and Redis:
+
+```bash
+# Using Docker
+docker run -d --name termflux-postgres -p 5432:5432 -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=termflux postgres:16-alpine
+docker run -d --name termflux-redis -p 6379:6379 redis:7-alpine
+```
+
+3. Configure environment variables:
 
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env`:
-
-```
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/termflux"
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
-REDIS_URL="redis://localhost:6379"
-```
-
-3. Run database migrations:
+4. Run database migrations:
 
 ```bash
 bun run db:generate
@@ -85,6 +103,21 @@ bun start
 ```
 
 The application runs on `http://localhost:3000`. WebSocket terminal server runs on port 3001.
+
+## Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `DATABASE_URL` | PostgreSQL connection string | `postgresql://postgres:postgres@localhost:5432/termflux` |
+| `REDIS_URL` | Redis connection string | `redis://localhost:6379` |
+| `APP_URL` | Application URL | `http://localhost:3000` |
+| `NEXT_PUBLIC_APP_URL` | Public application URL | `http://localhost:3000` |
+| `DOCKER_SOCKET` | Docker socket path | `/var/run/docker.sock` |
+| `WORKSPACE_IMAGE` | Docker image for workspaces | `termflux-workspace:latest` |
+| `WORKSPACE_NETWORK` | Docker network for workspaces | `termflux-network` |
+| `SECRETS_ENCRYPTION_KEY` | Key for encrypting secrets | (required) |
+| `GITHUB_CLIENT_ID` | GitHub OAuth client ID | (optional) |
+| `GITHUB_CLIENT_SECRET` | GitHub OAuth client secret | (optional) |
 
 ## Scripts
 

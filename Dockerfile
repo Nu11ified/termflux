@@ -25,6 +25,11 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 # Copy node_modules for serverExternalPackages
 COPY --from=builder /app/node_modules ./node_modules
+# Copy files needed for migrations
+COPY --from=builder /app/drizzle.config.ts ./
+COPY --from=builder /app/src/lib/db/schema.ts ./src/lib/db/
+COPY --from=builder /app/start.sh ./
+RUN chmod +x start.sh
 
 USER nextjs
 
@@ -33,4 +38,4 @@ EXPOSE 3000 3001
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["bun", "server.js"]
+CMD ["./start.sh"]

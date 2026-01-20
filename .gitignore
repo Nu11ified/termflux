@@ -1,6 +1,9 @@
 # dependencies
 node_modules
 
+.claude/
+CLAUDE.md
+
 # Next.js
 .next
 out
